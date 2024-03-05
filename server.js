@@ -7,16 +7,12 @@ app.use((req,res,next)=>{
     res.header('Access-Control-Allow-Origin', '*');
     next();
 })
-const expressServer=app.listen(process.env.PORT||443)
+const expressServer=app.listen(process.env.PORT||3500)
 
 const io=new Server(expressServer,{
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"],
-        transports: ['websocket', 'polling'],
-        credentials: true
-    },
-    allowEIO3: true
+    cors:{
+        origin:"*"
+    }
 })
 
 class Room{
