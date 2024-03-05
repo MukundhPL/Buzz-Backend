@@ -10,9 +10,13 @@ app.use((req,res,next)=>{
 const expressServer=app.listen(process.env.PORT||3500)
 
 const io=new Server(expressServer,{
-    cors:{
-        origin:"*"
-    }
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+        transports: ['websocket', 'polling'],
+        credentials: true
+    },
+    allowEIO3: true
 })
 
 class Room{
