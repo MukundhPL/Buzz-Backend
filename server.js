@@ -25,6 +25,9 @@ class Room{
         this.host=host
     }
 }
+app.get("/",(req,res)=>{
+    res.send("Server Running")
+})
 
 const RoomState={
     rooms:new Map(),
