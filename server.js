@@ -1,4 +1,5 @@
 const express=require("express")
+const dotenv=require("dotenv").config()
 const {Server}=require("socket.io")
 
 const app=express()
@@ -6,12 +7,14 @@ app.use((req,res,next)=>{
     res.header('Access-Control-Allow-Origin', '*');
     next();
 })
-const expressServer=app.listen(3500)
+const expressServer=app.listen(process.env.PORT||3500)
+
 const io=new Server(expressServer,{
     cors:{
         origin:"*"
     }
 })
+
 class Room{
     constructor(buzzed,members,host){
         this.buzzed=buzzed,
