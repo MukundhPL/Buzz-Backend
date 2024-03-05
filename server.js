@@ -2,6 +2,10 @@ const express=require("express")
 const {Server}=require("socket.io")
 
 const app=express()
+app.use((req,res,next)=>{
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+})
 const expressServer=app.listen(3500)
 const io=new Server(expressServer,{
     cors:{
