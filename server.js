@@ -4,10 +4,10 @@ const dotenv=require("dotenv").config()
 const {Server}=require("socket.io")
 
 const app=express()
-app.use((req,res,next)=>{
-    res.header('Access-Control-Allow-Origin', '*');
-    next();
-})
+// app.use((req,res,next)=>{
+//     res.header('Access-Control-Allow-Origin', '*');
+//     next();
+// })
 const expressServer=createServer(app)
 
 
