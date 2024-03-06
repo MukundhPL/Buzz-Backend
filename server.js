@@ -13,7 +13,7 @@ const expressServer=createServer(app)
 
 const io=new Server(expressServer,{
     cors:{
-        origin:"*"
+        origin:"https://buzz-frontend.onrender.com/"
     }
 })
 expressServer.listen(process.env.PORT||3500)
