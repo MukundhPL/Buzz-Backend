@@ -23,6 +23,7 @@ class Room{
         this.buzzed=buzzed,
         this.members=members
         this.host=host
+        this.lock=false;
     }
 }
 app.get("/",(req,res)=>{
@@ -73,16 +74,17 @@ io.on("connection",socket=>{
             io.to(room).emit("update",data)
         }
         // //console.log(`${socket.id} ${socket.client.conn.server.clientsCount }`)
-        socket.on("joinRoom",({room,id,name})=>{
+        socket.on("joinRoom",({room,name})=>{
  
             if(RoomState.rooms.has(room)){
                 socket.join(room)
-                RoomState.rooms.get(room).members.set(id,name)
+                RoomState.rooms.get(room).members.set(socket.id,name)
                 const data={
                     room:room,
                     name:name,
                     members:mapToArray(RoomState.rooms.get(room).members),
-                    buzzed:mapToArray(RoomState.rooms.get(room).buzzed)
+                    buzzed:mapToArray(RoomState.rooms.get(room).buzzed),
+                    lock:RoomState.rooms.get(room).lock
                 }
                 socket.emit("joinedRoom",data)
                 io.to(room).emit("newJoin",data)
@@ -98,12 +100,16 @@ io.on("connection",socket=>{
             }
             else socket.emit("alert",`Room already exists`)
         })
-        socket.on("buzzRoom",({id,room})=>{
+        socket.on("buzzRoom",({room})=>{
             //console.log(`Buzz:${id}${room}`)
-            const name=RoomState.rooms.get(room).members.get(id)
-            RoomState.rooms.get(room).buzzed.set(id,name)
-            RoomState.rooms.get(room).members.delete(id)
-            update(room)
+            if(RoomState.rooms.get(room)){
+                if(!RoomState.rooms.get(room).lock){
+                    const name=RoomState.rooms.get(room).members.get(socket.id)
+                    RoomState.rooms.get(room).buzzed.set(socket.id,name)
+                    RoomState.rooms.get(room).members.delete(socket.id)
+                    update(room)
+                }
+            }
         })
         socket.on("clearBuzz",(room)=>{
             //console.log(room)
@@ -137,7 +143,9 @@ io.on("connection",socket=>{
             if(RoomState.rooms.get(room))io.to(RoomState.rooms.get(room).host).emit("alert",`${name} has left the game`)
         })
         socket.on("lock",(room)=>{
-
+            if(RoomState.rooms.get(room)){
+                RoomState.rooms.get(room).lock=!RoomState.rooms.get(room).lock;
+            }
             io.to(room).emit("lock")
         })
         
